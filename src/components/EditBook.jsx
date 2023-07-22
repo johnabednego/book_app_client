@@ -1,16 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Dropzone from "react-dropzone";
 import { useDispatch } from "react-redux";
-import { ModalFalse } from "../features/modalSlice";
+import { EditModalFalse } from "../features/editModalSlice";
 
-const BookForm = () => {
+const EditBook = ({book}) => {
   const dispatch = useDispatch();
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [year, setYear] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [error, setError] = useState("");
+  let [title, setTitle] = useState("");
+  let [author, setAuthor] = useState("");
+  let [year, setYear] = useState("");
+  let [selectedFile, setSelectedFile] = useState(null);
+  let [error, setError] = useState("");
+
+  const handleOldBook = async ()=>{
+    setTitle(book.title) 
+    setAuthor(book.author)
+    setYear(book.year)
+  }
+
+  useEffect(()=>{
+    handleOldBook()
+  }, [])
+  
 
   const handleFileChange = (files) => {
     setSelectedFile(files[0]);
@@ -25,8 +36,8 @@ const BookForm = () => {
       image: selectedFile,
     };
     try {
-      await axios.post(
-        "https://book-api-modenbo-technologies.vercel.app/api/books/",
+      await axios.put(
+        `https://book-api-modenbo-technologies.vercel.app/api/books/${book.id}/`,
         data,
         {
           headers: {
@@ -35,7 +46,7 @@ const BookForm = () => {
         }
       );
       // Book added successfully, perform any further actions, e.g., redirect, update state, etc.
-      dispatch(ModalFalse()) && window.location.reload();
+      dispatch(EditModalFalse()) && window.location.reload();
     } catch (error) {
       console.error("Error adding book:", error.response.data);
       setError(error.response.data.message);
@@ -51,13 +62,13 @@ const BookForm = () => {
     >
       <button
         className="closeButton rounded-[4px] select-none box-border flex justify-center items-center text-center p-1 ml-auto  border-0  float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-        onClick={() => dispatch(ModalFalse())}
+        onClick={() => dispatch(EditModalFalse())}
       >
         <span className=" -mt-1 flex justify-center items-center  bg-transparent text-white opacity-95 h-6 w-6 text-2xl  outline-none focus:outline-none">
           x
         </span>
       </button>
-      <h2 className="text-2xl font-semibold mb-6 text-center">Add New Book</h2>
+      <h2 className="text-2xl font-semibold mb-6 text-center">Edit The Book</h2>
       <h2 className=" text-red-500 font-semibold text-center mb-3">{error}</h2>
       <div className="mb-4">
         <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -119,10 +130,10 @@ const BookForm = () => {
         type="submit"
         className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
       >
-        Add Book
+        Save Book
       </button>
     </form>
   );
 };
 
-export default BookForm;
+export default EditBook;
