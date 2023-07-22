@@ -7,6 +7,7 @@ const BookForm = () => {
   const [author, setAuthor] = useState('');
   const [year, setYear] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
+  const [error, setError] = useState('')
 
   const handleFileChange = (files) => {
     setSelectedFile(files[0]);
@@ -14,21 +15,18 @@ const BookForm = () => {
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('author', author);
-    formData.append('year', year);
-    formData.append('image', selectedFile);
     const data = {'title': title, 'author':author, 'year':year, 'image':selectedFile}
     try {
-      await axios.post('https://book-api-modenbo-technologies.vercel.app/api/books/', data, {
+      await axios.post('http://127.0.0.1:8000/api/books/', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
       // Book added successfully, perform any further actions, e.g., redirect, update state, etc.
+      console.log("Yes")
     } catch (error) {
-      console.error('Error adding book:', error);
+      console.error('Error adding book:', error.response.data);
+      setError(error.response.data.message)
 
     }
   };
@@ -36,6 +34,7 @@ const BookForm = () => {
   return (
     <form onSubmit={handleFormSubmit}  method="post" enctype="multipart/form-data" className="max-w-md mx-auto p-6 bg-white rounded shadow-md">
       <h2 className="text-2xl font-semibold mb-6 text-center">Add New Book</h2>
+      <h2 className=' text-red-500 font-semibold text-center mb-3'>{error}</h2>
       <div className="mb-4">
         <label className="block text-gray-700 text-sm font-bold mb-2">Title:</label>
         <input
@@ -67,7 +66,7 @@ const BookForm = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2">Image:</label>
+        <label className="block text-gray-700 text-sm font-bold mb-2">Cover:</label>
         <Dropzone onDrop={handleFileChange} accept="image/*" multiple={false}>
           {({ getRootProps, getInputProps }) => (
             <div
@@ -77,7 +76,7 @@ const BookForm = () => {
               <input
                {...getInputProps()} />
               {selectedFile ? (
-                <p>Selected Image: {selectedFile.name}</p>
+                <p>Selected Cover: {selectedFile.name}</p>
               ) : (
                 <p>Drag and drop an image here, or click to select one</p>
               )}

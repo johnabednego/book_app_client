@@ -7,8 +7,7 @@ const BookList = () => {
 
   const fetchBooks = async () => {
     try {
-      const response = await axios.get('https://book-api-modenbo-technologies.vercel.app/api/books/?format=json');
-      console.log(response)
+      const response = await axios.get('https://book-api-modenbo-technologies.vercel.app/api/books/');
       setBooksData(response.data);
     } catch (error) {
       console.error('Error fetching books:', error);

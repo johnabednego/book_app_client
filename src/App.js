@@ -5,7 +5,7 @@ function App() {
   return (
    <div>
     <BookList/>
-    {/* <BookForm/> */}
+    <BookForm/>
    </div>
   );
 }
